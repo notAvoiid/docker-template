@@ -1,0 +1,15 @@
+services:
+
+  template:
+    image: docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest #The recommended is to use a specific version
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin13
+      POSTGRES_DB: template
