@@ -1,7 +1,11 @@
+version: '3.9'
+
 services:
 
   template:
     image: docker
+    networks:
+      - backend
     ports:
       - "8080:8080"
     depends_on:
@@ -9,7 +13,14 @@ services:
 
   db:
     image: postgres:latest #The recommended is to use a specific version
+    networks:
+      - backend
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin13
       POSTGRES_DB: template
+
+networks:
+  backend:
+    name: backend_network
+    driver: bridge
