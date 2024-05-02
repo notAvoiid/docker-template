@@ -3,6 +3,15 @@ version: '3.9'
 services:
   template:
     image: docker
+    shm_size: 128mb #Shared memory
+    deploy:
+      resources:
+        limits: #Max memory usage
+          cpus: '0.1' #Limits how much percent will be used, in this example is 7%
+          memory: 512M #Limits to use 256MB
+        reservations:
+          cpus: '0.05' #Minium for the service work!
+          memory: 256M #Minium for the service work!
     networks:
       - backend
     ports:
@@ -13,12 +22,21 @@ services:
   db:
     image: postgres:latest #The recommended is to use a specific version
     restart: always
-    networks:
-      - backend
+    shm_size: 128mb
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin13
       POSTGRES_DB: template
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M #In this example you won't even use 10%, but it's a good parameter to start!
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+    networks:
+      - backend
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
