@@ -2,16 +2,21 @@ version: '3.9'
 
 services:
   template:
+    container_name: api
     image: docker
-    shm_size: 128mb #Shared memory
+    shm_size: 128mb
+    environment:
+      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/template
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING.DATASOURCE.PASSWORD: admin123
     deploy:
       resources:
-        limits: #Max memory usage
-          cpus: '0.5' #Limits how much percent will be used, in this example is 50%
-          memory: 512M #Limits to use 512MB
+        limits:
+          cpus: '0.5'
+          memory: 512M
         reservations:
-          cpus: '0.25' #Minium for the service work!
-          memory: 256M #Minium for the service work!
+          cpus: '0.25'
+          memory: 256M
     networks:
       - backend
     ports:
@@ -20,25 +25,39 @@ services:
       - db
 
   db:
-    image: postgres:latest #The recommended is to use a specific version
+    container_name: postgres
+    image: postgres:latest
     restart: always
     shm_size: 128mb
+    ports:
+      - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin123
+      POSTGRES_USER: postgres
       POSTGRES_DB: template
     deploy:
       resources:
         limits:
           cpus: '0.5'
-          memory: 512M #In this example you won't even use 10%, but it's a good parameter to start!
+          memory: 512M
         reservations:
-          cpus: '0.1'
+          cpus: '0.25'
           memory: 256M
     networks:
       - backend
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: pgadmin4
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: test.test@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "3333:80"
+
 
 networks:
   backend:
